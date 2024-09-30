@@ -45,24 +45,39 @@
         // Kamerani sozlash
         camera.position.z = 1; // Kamerani biroz orqaga suramiz
 
-        // Sichqoncha pozitsiyasini saqlash
-        let mouseX = 0;
-        let mouseY = 0;
+        // Globus aylanishi uchun o'zgaruvchilar
+        let rotationSpeed = 0.01; // Default aylanish tezligi
+        let isMouseOverGlobe = false; // Sichqoncha globus ustida ekanligini aniqlash
 
         // Sichqoncha harakati hodisasini qo'shamiz
         document.addEventListener('mousemove', (event) => {
             // Sichqonchaning pozitsiyasini normalize qilamiz
-            mouseX = (event.clientX / window.innerWidth) * 2 - 1; // -1 dan 1 gacha
-            mouseY = -(event.clientY / window.innerHeight) * 2 + 1; // 1 dan -1 gacha
+            const mouseX = (event.clientX / window.innerWidth) * 2 - 1; // -1 dan 1 gacha
+            const mouseY = -(event.clientY / window.innerHeight) * 2 + 1; // 1 dan -1 gacha
+
+            // Raycaster yaratamiz
+            const raycaster = new THREE.Raycaster();
+            const mouse = new THREE.Vector2(mouseX, mouseY);
+            raycaster.setFromCamera(mouse, camera);
+
+            // Globusga to'g'ri keladigan ob'ektlar ro'yxati
+            const intersects = raycaster.intersectObject(globe);
+
+            // Agar sichqoncha globus ustida bo'lsa, isMouseOverGlobe ni true qiling
+            isMouseOverGlobe = intersects.length > 0;
         });
 
         // Animatsiya
         function animate() {
             requestAnimationFrame(animate);
 
-            // Globusni sichqoncha harakati asosida aylantirish
-            globe.rotation.y += mouseX * 0.1; // Sichqoncha X harakatiga qarab aylanish
-            globe.rotation.x += mouseY * 0.1; // Sichqoncha Y harakatiga qarab aylanish
+            // Default aylanish
+            globe.rotation.y += 0.01; // Doimiy aylanish
+
+            // Agar sichqoncha globus ustida bo'lsa, globusni sekin aylantirish
+            if (isMouseOverGlobe) {
+                globe.rotation.y += rotationSpeed; // Sichqoncha harakati bo'yicha sekin aylanish
+            }
 
             renderer.render(scene, camera);
         }

@@ -5,8 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Three.js Globe Example</title>
     <style>
-        body { margin: 0; }
-        canvas { display: block; }
+        body { 
+            margin: 0; 
+            background-image: url('../1-Globus/images/sky.jpg'); /* Galaktika rasm faylini qo'shish */
+            background-size: cover; /* Rasmni to'liq ekranga moslashtirish */
+            background-position: center; /* Rasm markazga joylashtiriladi */
+            height: 100vh; /* Butun balandlikni egallash */
+            overflow: hidden; /* Sahna ko'rinishi uchun o'rnatish */
+        }
+        canvas { 
+            display: block; 
+            position: absolute; /* Canvas pozitsiyasini belgilash */
+            top: 0; /* Yuqoriga joylashadi */
+            left: 0; /* Chapga joylashadi */
+            z-index: 1; /* Rasm fonining ustida joylashadi */
+        }
     </style>
 </head>
 <body>
@@ -15,7 +28,7 @@
         // Sahna, kamera va renderer yaratamiz
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer();
+        const renderer = new THREE.WebGLRenderer({ alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
@@ -29,18 +42,27 @@
         const globe = new THREE.Mesh(globeGeometry, globeMaterial);
         scene.add(globe);
 
-        // Qora fonga o'rnatamiz
-        scene.background = new THREE.Color(0x000000);
-
         // Kamerani sozlash
-        camera.position.z = 1;
+        camera.position.z = 1; // Kamerani biroz orqaga suramiz
+
+        // Sichqoncha pozitsiyasini saqlash
+        let mouseX = 0;
+        let mouseY = 0;
+
+        // Sichqoncha harakati hodisasini qo'shamiz
+        document.addEventListener('mousemove', (event) => {
+            // Sichqonchaning pozitsiyasini normalize qilamiz
+            mouseX = (event.clientX / window.innerWidth) * 2 - 1; // -1 dan 1 gacha
+            mouseY = -(event.clientY / window.innerHeight) * 2 + 1; // 1 dan -1 gacha
+        });
 
         // Animatsiya
         function animate() {
             requestAnimationFrame(animate);
 
-            // Yerning aylanishi
-            globe.rotation.y += 0.01;  // Sferani y o'qi bo'ylab aylantiramiz
+            // Globusni sichqoncha harakati asosida aylantirish
+            globe.rotation.y += mouseX * 0.1; // Sichqoncha X harakatiga qarab aylanish
+            globe.rotation.x += mouseY * 0.1; // Sichqoncha Y harakatiga qarab aylanish
 
             renderer.render(scene, camera);
         }
@@ -48,10 +70,5 @@
         // Animatsiyani ishga tushirish
         animate();
     </script>
-    <style>
-      *{
-        background-image: url(sky.jpg) !important;
-      }
-    </style>
 </body>
 </html>

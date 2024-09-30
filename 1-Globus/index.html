@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Three.js Globe Example</title>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Sahna, kamera va renderer yaratamiz
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Texture yuklash
+        const textureLoader = new THREE.TextureLoader();
+        const earthTexture = textureLoader.load('images/earth.jpg');  // Yer tekstura faylini yuklang
+
+        // Yer (globus) uchun material va geometriya
+        const globeMaterial = new THREE.MeshBasicMaterial({ map: earthTexture });
+        const globeGeometry = new THREE.SphereGeometry(0.5, 32, 32);  // 0.5 radiusli sfera
+        const globe = new THREE.Mesh(globeGeometry, globeMaterial);
+        scene.add(globe);
+
+        // Qora fonga o'rnatamiz
+        scene.background = new THREE.Color(0x000000);
+
+        // Kamerani sozlash
+        camera.position.z = 1;
+
+        // Animatsiya
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Yerning aylanishi
+            globe.rotation.y += 0.01;  // Sferani y o'qi bo'ylab aylantiramiz
+
+            renderer.render(scene, camera);
+        }
+
+        // Animatsiyani ishga tushirish
+        animate();
+    </script>
+    <style>
+      *{
+        background-image: url(sky.jpg) !important;
+      }
+    </style>
+</body>
+</html>
